@@ -1,84 +1,138 @@
-import { Grid3X3, Rows3 } from 'lucide-react'
-import { useState } from 'react'
-import { Navigate, NavLink, Route, Routes } from 'react-router-dom'
-import { BoardsFoundation } from './features/boards/BoardsFoundation'
-import { MovesFoundation } from './features/moves/MovesFoundation'
+import { House } from "lucide-react";
+import { useState } from "react";
+import { Navigate, NavLink, Route, Routes } from "react-router-dom";
+import { BoardsFoundation } from "./features/boards/BoardsFoundation";
+import {
+  defaultBoardsRouteContext,
+  type BoardsRouteContext,
+} from "./features/boards/boardsRouteContext";
+import { MovesFoundation } from "./features/moves/MovesFoundation";
+import {
+  defaultMovesViewState,
+  isFeedViewState,
+} from "./features/moves/movesRouteContext";
+import type { FeedViewState } from "./lib/api";
+import { cn } from "./lib/cn";
+
+function BrandTierIcon({ className = "" }: { className?: string }) {
+  return (
+    <span
+      className={`grid h-[18px] w-[18px] shrink-0 grid-cols-2 gap-[4px] ${className}`}
+    >
+      <span className="rounded-full bg-current" />
+      <span className="rounded-full bg-current" />
+      <span className="rounded-full bg-current" />
+      <span className="rounded-full bg-current" />
+    </span>
+  );
+}
 
 function App() {
-  const [savedMoveIds, setSavedMoveIds] = useState<Set<number | string>>(() => new Set())
+  const [movesViewState, setMovesViewState] = useState<FeedViewState>(() => {
+    const tabParam = new URLSearchParams(window.location.search).get("tab");
+
+    return isFeedViewState(tabParam) ? tabParam : defaultMovesViewState;
+  });
+  const [movesSelectedMoveId, setMovesSelectedMoveId] = useState<
+    number | string | null
+  >(null);
+  const [boardsContext, setBoardsContext] = useState<BoardsRouteContext>(
+    defaultBoardsRouteContext,
+  );
+  const [savedMoveIds, setSavedMoveIds] = useState<Set<number | string>>(
+    () => new Set(),
+  );
 
   function toggleSavedMove(moveId: number | string) {
     setSavedMoveIds((current) => {
-      const next = new Set(current)
+      const next = new Set(current);
 
       if (next.has(moveId)) {
-        next.delete(moveId)
+        next.delete(moveId);
       } else {
-        next.add(moveId)
+        next.add(moveId);
       }
 
-      return next
-    })
+      return next;
+    });
   }
 
   return (
-    <main className="min-h-screen bg-zinc-100 text-zinc-950">
-      <div className="mx-auto flex min-h-screen w-full max-w-[1440px] flex-col px-4 py-5 sm:px-6 lg:px-8">
-        <header className="mb-6 flex flex-col gap-5 border-b border-zinc-200 pb-5 md:flex-row md:items-end md:justify-between">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.12em] text-zinc-500">
-              Cut & Sold take-home
+    <main className="min-h-screen bg-[#f7f7f7] text-[#101010]">
+      <div className="grid min-h-screen w-full grid-cols-1 lg:grid-cols-[minmax(0,13fr)_minmax(0,87fr)]">
+        <aside className="flex min-w-0 flex-col bg-[#ededed] px-7 py-9">
+          <div className="mb-12">
+            <p className="text-[8px] font-medium uppercase tracking-[0.18em] text-[#666]">
+              News Feed
             </p>
-            <h1 className="mt-2 text-3xl font-semibold tracking-normal text-zinc-950 md:text-5xl">
-              Moves and Boards
-            </h1>
+            <p className="mt-2 text-[22px] font-bold leading-none tracking-[-0.02em] text-black">
+              cutandsold
+            </p>
           </div>
 
-          <nav className="inline-flex w-fit rounded-full border border-zinc-200 bg-white p-1 shadow-sm">
+          <nav className="flex flex-col gap-7">
             <NavLink
               to="/moves"
               className={({ isActive }) =>
-                `inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition ${
-                  isActive ? 'bg-zinc-950 text-white' : 'text-zinc-500 hover:text-zinc-950'
-                }`
+                cn(
+                  "inline-flex items-center gap-5 text-[14px] font-medium leading-none transition",
+                  isActive ? "text-black" : "text-[#777] hover:text-black",
+                )
               }
             >
-              <Rows3 className="size-4" />
+              <House className="size-[20px] fill-current stroke-0 opacity-60" />
               Moves
             </NavLink>
             <NavLink
               to="/boards"
               className={({ isActive }) =>
-                `inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition ${
-                  isActive ? 'bg-zinc-950 text-white' : 'text-zinc-500 hover:text-zinc-950'
-                }`
+                cn(
+                  "inline-flex items-center gap-5 text-[14px] font-medium leading-none transition",
+                  isActive ? "text-black" : "text-[#777] hover:text-black",
+                )
               }
             >
-              <Grid3X3 className="size-4" />
+              <BrandTierIcon />
               Boards
             </NavLink>
           </nav>
-        </header>
 
-        <div className="flex-1">
+          <div className="flex-1" />
+        </aside>
+
+        <div className="min-w-0 flex-1">
           <Routes>
             <Route path="/" element={<Navigate to="/moves" replace />} />
             <Route
               path="/moves"
               element={
                 <MovesFoundation
+                  viewState={movesViewState}
+                  onViewStateChange={setMovesViewState}
+                  selectedMoveId={movesSelectedMoveId}
+                  onSelectedMoveIdChange={setMovesSelectedMoveId}
                   savedMoveIds={savedMoveIds}
                   onToggleSavedMove={toggleSavedMove}
                 />
               }
             />
-            <Route path="/boards" element={<BoardsFoundation />} />
+            <Route
+              path="/boards"
+              element={
+                <BoardsFoundation
+                  context={boardsContext}
+                  onContextChange={setBoardsContext}
+                  savedMoveIds={savedMoveIds}
+                  onToggleSavedMove={toggleSavedMove}
+                />
+              }
+            />
             <Route path="*" element={<Navigate to="/moves" replace />} />
           </Routes>
         </div>
       </div>
     </main>
-  )
+  );
 }
 
-export default App
+export default App;

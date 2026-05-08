@@ -8,15 +8,13 @@ import type {
   MoveDetailResponse,
 } from './types'
 
-const EXTERNAL_API_BASE_URL = 'https://saint-laurent.supplyandfriends.com/api/data/take-home'
-const API_BASE_URL = import.meta.env.DEV ? EXTERNAL_API_BASE_URL : '/api/take-home'
-
+const API_BASE_URL = 'https://saint-laurent.supplyandfriends.com/api/data/take-home'
 const authToken = import.meta.env.VITE_TAKE_HOME_API_TOKEN
 
 type RequestParams = Record<string, string | number | undefined>
 
 function buildUrl(path: string, params: RequestParams = {}) {
-  const url = new URL(`${API_BASE_URL}/${path}`, window.location.origin)
+  const url = new URL(`${API_BASE_URL}/${path}`)
 
   Object.entries(params).forEach(([key, value]) => {
     if (value !== undefined) {
@@ -29,16 +27,22 @@ function buildUrl(path: string, params: RequestParams = {}) {
 
 async function request<T>(path: string, params?: RequestParams): Promise<T> {
   const headers = authToken ? { Authorization: authToken } : undefined
-
-  const response = await fetch(buildUrl(path, params), {
-    headers,
-  })
+  const url = buildUrl(path, params)
+  const response = await fetch(url, { headers })
 
   if (!response.ok) {
     throw new Error(`Request failed: ${response.status} ${response.statusText}`)
   }
 
-  return response.json() as Promise<T>
+  const data = (await response.json()) as T
+
+  console.log(`[api:${path}]`, {
+    url: url.toString(),
+    params,
+    data,
+  })
+
+  return data
 }
 
 export function getFeedMoves(params: {

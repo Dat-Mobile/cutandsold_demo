@@ -1,32 +1,35 @@
-import { Bookmark, Loader2, Sparkles, Zap } from 'lucide-react'
-import { useState } from 'react'
-import { cn } from '../../lib/cn'
-import type { NormalizedMove } from './normalizeMove'
+import { Bookmark, Loader2, Sparkles, Zap } from "lucide-react";
+import { cn } from "../../lib/cn";
+import type { NormalizedMove } from "./normalizeMove";
 
 type MoveCardProps = {
-  move: NormalizedMove
-  saved: boolean
-  onToggleSaved: (moveId: NormalizedMove['id']) => void
-  onOpen: (moveId: NormalizedMove['id']) => void
-}
+  move: NormalizedMove;
+  saved: boolean;
+  onToggleSaved: (moveId: NormalizedMove["id"]) => void;
+  onOpen: (moveId: NormalizedMove["id"]) => void;
+};
 
-export function MoveCard({ move, saved, onToggleSaved, onOpen }: MoveCardProps) {
-  const [insightActive, setInsightActive] = useState(false)
-  const visibleInsights = move.insights.slice(0, 2)
+export function MoveCard({
+  move,
+  saved,
+  onToggleSaved,
+  onOpen,
+}: MoveCardProps) {
+  const visibleInsights = move.insights.slice(0, 2);
 
   return (
-    <article className="group/card grid grid-cols-[minmax(0,1fr)_56px] overflow-visible md:grid-cols-[minmax(0,1fr)_74px]">
+    <article className="group/card grid min-h-[620px] grid-cols-1 gap-8 lg:grid-cols-[40fr_36fr]">
       <button
         type="button"
         aria-label={`Open move details: ${move.title}`}
         onClick={() => onOpen(move.id)}
-        className="relative aspect-[536/701] min-h-[420px] overflow-hidden bg-zinc-200 text-left shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-950 md:min-h-[520px]"
+        className="relative min-h-[560px] overflow-hidden bg-[#ededed] text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-950 lg:min-h-[620px]"
       >
         {move.imageUrl ? (
           <img
             src={move.imageUrl}
             alt=""
-            className="h-full w-full object-cover transition duration-500 ease-out group-hover/card:scale-[1.025]"
+            className="h-full w-full object-cover transition duration-500 ease-out group-hover/card:scale-[1.02]"
           />
         ) : (
           <div className="flex h-full items-center justify-center text-zinc-500">
@@ -34,106 +37,105 @@ export function MoveCard({ move, saved, onToggleSaved, onOpen }: MoveCardProps) 
           </div>
         )}
 
-        <div className="absolute left-6 top-6 flex h-12 min-w-24 items-center justify-center rounded bg-white/90 px-4 shadow-sm backdrop-blur">
+        <div className="absolute left-6 top-6 flex h-12 min-w-24 items-center justify-center rounded bg-white/92 px-4 shadow-sm backdrop-blur">
           {move.brandLogoUrl ? (
-            <img src={move.brandLogoUrl} alt={move.brandName} className="max-h-7 max-w-20 object-contain" />
+            <img
+              src={move.brandLogoUrl}
+              alt={move.brandName}
+              className="max-h-7 max-w-20 object-contain"
+            />
           ) : (
-            <span className="text-xs font-semibold text-zinc-950">{move.brandName}</span>
+            <span className="text-xs font-semibold text-zinc-950">
+              {move.brandName}
+            </span>
           )}
         </div>
 
         <div className="absolute right-6 top-6 flex size-12 items-center justify-center rounded-full bg-white shadow-sm">
           {move.countryFlagUrl ? (
-            <img src={move.countryFlagUrl} alt={move.countryName ?? 'Country'} className="size-6 rounded-full object-cover" />
+            <img
+              src={move.countryFlagUrl}
+              alt={move.countryName ?? "Country"}
+              className="size-6 rounded-full object-cover"
+            />
           ) : (
             <span className="text-[10px] font-semibold uppercase text-zinc-600">
-              {move.countryName?.slice(0, 2) ?? 'US'}
+              {move.countryName?.slice(0, 2) ?? "US"}
             </span>
           )}
         </div>
 
-        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/72 via-black/38 to-transparent px-8 pb-8 pt-28 text-white">
+        <div className="absolute inset-x-0 bottom-0 min-h-[28%] bg-gradient-to-t from-[#939393]/99 via-[#939393]/92 to-[#939393]/0 px-8 pb-8 pt-16 text-white">
           <div className="mb-4 flex flex-wrap gap-1.5">
-            {(move.contentTypes.length ? move.contentTypes : ['Move']).map((type) => (
-              <span
-                key={type}
-                className="rounded-full bg-white/55 px-3 py-1 text-xs font-medium text-zinc-800 backdrop-blur"
-              >
-                {type}
-              </span>
-            ))}
+            {(move.contentTypes.length ? move.contentTypes : ["Move"]).map(
+              (type) => (
+                <span
+                  key={type}
+                  className="rounded-full bg-white/38 px-3 py-1 text-xs text-[#333] backdrop-blur"
+                >
+                  {type}
+                </span>
+              ),
+            )}
           </div>
 
-          <div className="group/title relative">
-            <h2 className="text-[19px] font-semibold leading-[1.35] tracking-normal text-white md:text-[20px]">
-              {move.title}
-            </h2>
-            {move.subtitle && (
-              <p className="mt-2 line-clamp-2 max-h-0 text-sm leading-5 text-white/0 transition-all duration-300 group-hover/title:max-h-12 group-hover/title:text-white/85">
-                {move.subtitle}
+          <h2 className="text-[16px] font-medium leading-[1.45] tracking-normal text-white">
+            {move.title}
+          </h2>
+        </div>
+      </button>
+
+      <aside className="group/insight relative min-h-[260px] pl-[105px] pt-8 lg:min-h-[620px]">
+        <div className="absolute bottom-0 left-[25px] top-0 w-px -translate-x-1/2 bg-[#ebebeb]" />
+        <button
+          type="button"
+          aria-pressed={saved}
+          aria-label={saved ? "Saved move" : "Save move"}
+          onClick={(event) => {
+            event.stopPropagation();
+            onToggleSaved(move.id);
+          }}
+          className={cn(
+            "absolute bottom-0 left-[25px] flex size-12 -translate-x-1/2 items-center justify-center rounded-full border border-zinc-200 bg-white text-zinc-300 shadow-sm transition duration-300",
+            "hover:-translate-y-0.5 hover:text-zinc-950 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-950",
+            saved && "border-zinc-950 bg-zinc-950 text-white",
+          )}
+        >
+          <Bookmark className={cn("size-5", saved && "fill-current")} />
+        </button>
+
+        <div className="absolute left-[25px] top-0 flex size-12 -translate-x-1/2 items-center justify-center rounded-full border border-white bg-white text-black shadow-[0_2px_10px_rgba(0,0,0,0.12)] transition duration-300 group-hover/insight:text-transparent">
+          <Zap className="size-5 fill-current stroke-[1.6] group-hover/insight:fill-[url(#move-zap-gradient)] group-hover/insight:stroke-[url(#move-zap-gradient)]" />
+        </div>
+
+        <svg className="pointer-events-none absolute size-0" aria-hidden="true">
+          <defs>
+            <linearGradient id="move-zap-gradient" x1="0" x2="1" y1="0" y2="1">
+              <stop offset="0%" stopColor="#52309b" />
+              <stop offset="52%" stopColor="#9f3c9b" />
+              <stop offset="100%" stopColor="#ee4f7a" />
+            </linearGradient>
+          </defs>
+        </svg>
+
+        <div className="relative max-w-[520px]">
+          <div className="space-y-8 text-[14px] leading-[1.45] text-black/24 transition duration-300 group-hover/insight:bg-gradient-to-br group-hover/insight:from-[#52309b] group-hover/insight:via-[#9f3c9b] group-hover/insight:to-[#ee4f7a] group-hover/insight:bg-clip-text group-hover/insight:text-transparent">
+            {visibleInsights.length > 0 ? (
+              visibleInsights.map((insight) => (
+                <p key={insight} className="relative pl-5">
+                  <span className="absolute left-0 top-[0.7em] size-1 rounded-full bg-current" />
+                  {insight}
+                </p>
+              ))
+            ) : (
+              <p className="flex items-center gap-2">
+                <Sparkles className="size-4" />
+                Insights will appear here.
               </p>
             )}
           </div>
         </div>
-      </button>
-
-      <aside className="relative bg-black">
-        <button
-          type="button"
-          aria-pressed={insightActive}
-          aria-label="Toggle insights"
-          onClick={(event) => {
-            event.stopPropagation()
-            setInsightActive((current) => !current)
-          }}
-          className={cn(
-            'absolute left-1/2 top-0 flex size-12 -translate-x-1/2 items-center justify-center rounded-full bg-white text-zinc-950 shadow-sm transition duration-300',
-            'hover:text-fuchsia-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white',
-            insightActive && 'text-fuchsia-500',
-          )}
-        >
-          <Zap className="size-5 fill-current" />
-        </button>
-
-        <div
-          className={cn(
-            'absolute left-16 top-1 hidden w-[270px] space-y-4 text-left text-xs font-medium leading-5 text-fuchsia-400 opacity-0 transition duration-300 xl:block xl:w-[310px]',
-            'group-hover/card:opacity-100',
-            insightActive && 'opacity-100',
-          )}
-        >
-          {visibleInsights.length > 0 ? (
-            visibleInsights.map((insight) => (
-              <p key={insight} className="relative pl-4">
-                <span className="absolute left-0 top-2 size-1 rounded-full bg-fuchsia-400" />
-                {insight}
-              </p>
-            ))
-          ) : (
-            <p className="flex items-center gap-2 text-fuchsia-300">
-              <Sparkles className="size-3.5" />
-              Insights will appear here.
-            </p>
-          )}
-        </div>
-
-        <button
-          type="button"
-          aria-pressed={saved}
-          aria-label={saved ? 'Saved move' : 'Save move'}
-          onClick={(event) => {
-            event.stopPropagation()
-            onToggleSaved(move.id)
-          }}
-          className={cn(
-            'absolute bottom-5 left-1/2 flex size-12 -translate-x-1/2 items-center justify-center rounded-full border border-zinc-200 bg-white text-zinc-300 shadow-sm transition duration-300',
-            'hover:-translate-y-0.5 hover:text-zinc-950 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white',
-            saved && 'border-zinc-950 bg-zinc-950 text-white',
-          )}
-        >
-          <Bookmark className={cn('size-5', saved && 'fill-current')} />
-        </button>
       </aside>
     </article>
-  )
+  );
 }

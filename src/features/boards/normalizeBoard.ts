@@ -1,6 +1,6 @@
 import type { BoardFilterOption, BoardFilterType, BoardImage } from '../../lib/api'
 
-export type BoardDensity = 'comfortable' | 'compact'
+export type BoardDensity = 'relaxed' | 'standard' | 'dense'
 
 export type BoardTabValue =
   | 'direct'

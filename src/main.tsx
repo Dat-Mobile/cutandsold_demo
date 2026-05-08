@@ -5,6 +5,12 @@ import { BrowserRouter } from 'react-router-dom'
 import './index.css'
 import App from './App.tsx'
 
+if (import.meta.env.DEV && window.location.hostname === '127.0.0.1') {
+  window.location.replace(
+    `${window.location.protocol}//localhost:${window.location.port}${window.location.pathname}${window.location.search}${window.location.hash}`,
+  )
+}
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
