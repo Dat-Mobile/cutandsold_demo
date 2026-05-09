@@ -34,7 +34,12 @@ const boardFilters: {
   filterType: BoardFilterType;
   icon: typeof Heart;
 }[] = [
-  { label: "By Brands", value: "by_brands", filterType: "brand", icon: Diamond },
+  {
+    label: "By Brands",
+    value: "by_brands",
+    filterType: "brand",
+    icon: Diamond,
+  },
   {
     label: "By Content Type",
     value: "by_content_type",
@@ -185,9 +190,17 @@ export function BoardsFoundation({
     content_type: targetIds.content_type ?? contentTypeOptions[0]?.id,
     country: targetIds.country ?? countryOptions[0]?.id,
   } satisfies Partial<Record<BoardFilterType, number>>;
+  const isContentTypeExpanded = expandedFilter === "content_type";
 
   return (
-    <section className="grid min-h-screen w-full max-w-full grid-cols-1 lg:grid-cols-[minmax(0,17fr)_minmax(0,70fr)]">
+    <section
+      className={cn(
+        "grid min-h-screen w-full max-w-full grid-cols-1",
+        isContentTypeExpanded
+          ? "lg:grid-cols-[minmax(300px,22fr)_minmax(0,65fr)]"
+          : "lg:grid-cols-[minmax(0,17fr)_minmax(0,70fr)]",
+      )}
+    >
       <div className="min-w-0 overflow-hidden px-8 py-9 lg:px-10">
         <div className="mb-[70px] flex items-center gap-6">
           <h1 className="bg-gradient-to-r from-[#25315f] to-[#9a826c] bg-clip-text text-[24px] font-medium leading-none tracking-[-0.03em] text-transparent">
@@ -274,7 +287,15 @@ export function BoardsFoundation({
                   <span className="flex w-[26px] shrink-0 items-center justify-center">
                     <Icon className="size-[19px] stroke-[2.1]" />
                   </span>
-                  <span className="min-w-0 flex-1 truncate">
+                  <span
+                    className={cn(
+                      "min-w-0 flex-1",
+                      isContentTypeExpanded &&
+                        filter.filterType === "content_type"
+                        ? "whitespace-nowrap"
+                        : "truncate",
+                    )}
+                  >
                     {filter.label}
                   </span>
                   {isExpanded ? (
@@ -288,9 +309,9 @@ export function BoardsFoundation({
                   <div
                     className={cn(
                       "scrollbar-hidden ml-[42px] flex max-h-[560px] w-[calc(100%-42px)] flex-col gap-3 overflow-y-auto",
-                      filter.filterType === "brand"
-                        ? "max-w-[155px]"
-                        : "max-w-[170px]",
+                      filter.filterType === "brand" && "max-w-[155px]",
+                      filter.filterType === "country" && "max-w-[170px]",
+                      filter.filterType === "content_type" && "max-w-none",
                     )}
                   >
                     {filterOptions.map((option) => {
@@ -311,18 +332,32 @@ export function BoardsFoundation({
                             filter.filterType === "brand" &&
                               "h-[62px] justify-center overflow-hidden px-3",
                             filter.filterType === "content_type" &&
-                              "min-h-0 justify-start rounded-none border-0 bg-transparent px-0 py-1 text-[14px] text-[#00000099] shadow-none",
+                              "min-h-[44px] justify-start rounded-none border-0 bg-transparent px-0 py-0 text-[14px] text-[#00000099] shadow-none",
                           )}
                         >
                           {filter.filterType === "content_type" ? (
-                            <span
-                              className={cn(
-                                "min-w-0 truncate",
-                                isSelected && "font-medium text-black",
+                            <>
+                              {option.imageUrl ? (
+                                <img
+                                  src={option.imageUrl}
+                                  alt={option.label}
+                                  className="size-[34px] shrink-0 rounded-[8px] object-cover"
+                                />
+                              ) : (
+                                <span className="size-[34px] shrink-0 rounded-[8px] bg-[#eeeeee]" />
                               )}
-                            >
-                              {option.label}
-                            </span>
+                              <span
+                                className={cn(
+                                  "min-w-0",
+                                  isContentTypeExpanded
+                                    ? "whitespace-nowrap"
+                                    : "truncate",
+                                  isSelected && "font-medium text-black",
+                                )}
+                              >
+                                {option.label}
+                              </span>
+                            </>
                           ) : option.imageUrl ? (
                             <img
                               src={option.imageUrl}
